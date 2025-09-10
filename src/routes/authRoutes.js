@@ -9,8 +9,8 @@ router.post('/register', register);
 router.post('/sendOTP', sendOTP);
 router.post('/verifyOTP', verifyOTP);
 router.post('/changePassword', changePassword);
-router.get('/getProfile', auth('user'), getProfile);
-router.post('/updateProfile', auth('user'), updateProfile);
+router.get('/getProfile', auth('user', 'provider'), getProfile);
+router.post('/updateProfile', auth('user', 'provider'), updateProfile);
 // router.post('/user/fileupload', upload.single("file"), fileUpload);
 
 router.get('/admin-only', auth('admin'), (req, res) => {
