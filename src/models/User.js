@@ -39,7 +39,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-
+    document: {
+      type: Array
+    },
+    status: {
+      type: String,
+      enum: ['Pending', 'Verified', 'Suspended'],
+      default: 'Pending'
+      // default: 'Suspended'
+    },
   },
   { timestamps: true },
 );

@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const { login, register, sendOTP, verifyOTP, changePassword, getProfile, updateProfile } = require('@controllers/authController');
+const { login, register, sendOTP, verifyOTP, changePassword, getProfile, updateProfile, getProvider, updateVerifyandSuspendStatus } = require('@controllers/authController');
 const auth = require('@middlewares/authMiddleware');
 // const { upload } = require("@services/fileUpload");
+const upload = require('../middlewares/upload');
 
 router.post('/login', login);
 router.post('/register', register);
@@ -10,8 +11,10 @@ router.post('/sendOTP', sendOTP);
 router.post('/verifyOTP', verifyOTP);
 router.post('/changePassword', changePassword);
 router.get('/getProfile', auth('user', 'provider'), getProfile);
-router.post('/updateProfile', auth('user', 'provider'), updateProfile);
+router.post('/updateProfile', upload.fields([{ name: 'profile', maxCount: 1 }, { name: 'document', maxCount: 5 }]), auth('user', 'provider'), updateProfile);
 // router.post('/user/fileupload', upload.single("file"), fileUpload);
+router.get('/getProvider', auth('user', 'provider', 'admin'), getProvider);
+router.post('/updateVerifyandSuspendStatus', auth('user', 'provider', 'admin'), updateVerifyandSuspendStatus);
 
 router.get('/admin-only', auth('admin'), (req, res) => {
   res.json({ message: 'Welcome, admin user!' });

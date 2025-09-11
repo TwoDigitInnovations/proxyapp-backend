@@ -4,6 +4,16 @@ const jwt = require('jsonwebtoken');
 const response = require("./../responses");
 const userHelper = require("./../helper/user");
 const Verification = require("@models/verification");
+const cloudinary = require('../config/cloudinary');
+
+
+// const cloudinary = require("cloudinary").v2;
+
+// cloudinary.config({
+//   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+// });
 
 module.exports = {
   register: async (req, res) => {
@@ -180,7 +190,68 @@ module.exports = {
 
   updateProfile: async (req, res) => {
     const payload = req.body;
-    const userId = req?.body?.userId || req.user.id
+    const userId = req?.body?.userId || req.user.id;
+
+    let profileUrl = null;
+    let documentUrl = [];
+
+    if (req.files.profile) {
+      const imageFile = req.files.profile[0];
+
+      try {
+        const base64Image = `data:${imageFile.mimetype};base64,${imageFile.buffer.toString('base64')}`;
+
+        const result = await cloudinary.uploader.upload(base64Image, {
+          folder: 'proxi',
+          resource_type: 'auto',
+          timeout: 60000
+        });
+        payload.profile = result.secure_url;
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return res.status(500).json({
+          success: false,
+          message: 'Error uploading image: ' + uploadError.message
+        });
+      }
+    } else {
+      // console.log('No image file found in request');
+    }
+
+    if (req.files.document) {
+      const imageFile = req.files.document;
+      try {
+        await Promise.all(imageFile.map(async (file) => {
+          const base64Image = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`;
+
+          const result = await cloudinary.uploader.upload(base64Image, {
+            folder: 'proxi',
+            resource_type: 'auto',
+            timeout: 60000
+          });
+          documentUrl.push(result.secure_url)
+        }));
+      } catch (uploadError) {
+        console.error('Cloudinary upload error:', uploadError);
+        return res.status(500).json({
+          success: false,
+          message: 'Error uploading image: ' + uploadError.message
+        });
+      }
+    } else {
+      // console.log('No image file found in request');
+    }
+
+    if (documentUrl) {
+      if (req.body.oldImages) {
+        const oldImages = JSON.parse(req.body.oldImages)
+        req.body.document = [...oldImages, ...documentUrl]
+      } else {
+        req.body.document = [...documentUrl]
+      }
+
+    }
+
     try {
       const u = await User.findByIdAndUpdate(
         userId,
@@ -214,6 +285,30 @@ module.exports = {
         message: "File uploaded.",
         file: `${process.env.ASSET_ROOT}/${key}`,
       });
+    } catch (error) {
+      return response.error(res, error);
+    }
+  },
+
+  getProvider: async (req, res) => {
+    console.log('AAAAAAA', req)
+    try {
+      const u = await User.find({ role: 'provider' }, '-password');
+      console.log('AAAAAAA', u)
+      return response.ok(res, u);
+    } catch (error) {
+      return response.error(res, error);
+    }
+  },
+
+  updateVerifyandSuspendStatus: async (req, res) => {
+    try {
+      const payload = req?.body || {};
+      let product = await User.findByIdAndUpdate(payload?.id, payload, {
+        new: true,
+        upsert: true,
+      });
+      return response.ok(res, product);
     } catch (error) {
       return response.error(res, error);
     }
