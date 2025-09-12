@@ -2,17 +2,45 @@ const mongoose = require("mongoose");
 const Category = require("@models/category");
 const response = require("./../responses");
 // const generateUniqueId = require("generate-unique-id");
-
+const cloudinary = require('../config/cloudinary');
 
 module.exports = {
 
     createCategory: async (req, res) => {
         console.log('AAAAAAA', req?.body)
+
+        let imageUrl = null;
+
+        if (req.files?.image) {
+            const imageFile = req.files?.image[0];
+
+            try {
+                const base64Image = `data:${imageFile.mimetype};base64,${imageFile.buffer.toString('base64')}`;
+
+                const result = await cloudinary.uploader.upload(base64Image, {
+                    folder: 'proxi',
+                    resource_type: 'auto',
+                    timeout: 60000
+                });
+                req.body.image = result.secure_url;
+            } catch (uploadError) {
+                console.error('Cloudinary upload error:', uploadError);
+                return res.status(500).json({
+                    success: false,
+                    message: 'Error uploading image: ' + uploadError.message
+                });
+            }
+        } else {
+            // console.log('No image file found in request');
+        }
+
         try {
             const payload = req?.body || {};
             payload.posted_by = req.user.id;
             // payload.slug = payload.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
             let cat = new Category(payload);
+
+            // payload = payload.image.imageUrl;
             console.log('BBBBBB', payload)
             await cat.save();
             return response.ok(res, { message: 'Category added successfully' });
@@ -52,6 +80,36 @@ module.exports = {
             // if (payload.name) {
             //     payload.slug = payload.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '')
             // }
+
+            let imageUrl = null;
+
+            if (req.files.image) {
+                const imageFile = req.files.image[0];
+
+                try {
+                    const base64Image = `data:${imageFile.mimetype};base64,${imageFile.buffer.toString('base64')}`;
+
+                    const result = await cloudinary.uploader.upload(base64Image, {
+                        folder: 'content',
+                        resource_type: 'auto',
+                        timeout: 60000
+                    });
+                    imageUrl = result.secure_url;
+                } catch (uploadError) {
+                    console.error('Cloudinary upload error:', uploadError);
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Error uploading image: ' + uploadError.message
+                    });
+                }
+            } else {
+                // console.log('No image file found in request');
+            }
+
+            if (imageUrl) {
+                req.body.image = imageUrl
+            }
+
             let category = await Category.findByIdAndUpdate(payload?.id, payload, {
                 new: true,
                 upsert: true,
