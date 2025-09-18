@@ -242,7 +242,18 @@ module.exports = {
       }
 
     }
+    if (payload.service_location) {
+      let d = JSON.parse(payload.service_location)
+      payload.service_location = {
+        type: 'Point',
+        coordinates: [d.lng, d.lat,]
+      }
+    }
 
+    if (payload.service_slot) {
+      let d = JSON.parse(payload.service_slot)
+      payload.service_slot = d
+    }
     try {
       const u = await User.findByIdAndUpdate(
         userId,
@@ -302,6 +313,29 @@ module.exports = {
       return response.ok(res, product);
     } catch (error) {
       return response.error(res, error);
+    }
+  },
+
+  nearMeServicebyCategory: async (req, res) => {
+    const id = req.body.category;
+    console.log(id)
+    try {
+      let orders = await User.find({
+        status: "Verified",
+        category: id,
+        service_location: {
+          $near: {
+            $maxDistance: 1609.34 * 5,
+            $geometry: {
+              type: "Point",
+              coordinates: req.body.location,
+            },
+          },
+        },
+      }, '-password')
+      return response.ok(res, orders);
+    } catch (err) {
+      return response.error(res, err);
     }
   },
 };

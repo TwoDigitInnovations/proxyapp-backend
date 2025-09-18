@@ -1,6 +1,18 @@
 const mongoose = require('mongoose');
 const bcrypt = require("bcryptjs");
 
+const pointSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["Point"],
+    required: true,
+  },
+  coordinates: {
+    type: [Number],
+    required: true,
+  },
+});
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -48,6 +60,25 @@ const userSchema = new mongoose.Schema(
       default: 'Pending'
       // default: 'Suspended'
     },
+    service_name: {
+      type: String,
+    },
+    service_location: {
+      type: pointSchema,
+    },
+    service_description: {
+      type: String,
+    },
+    service_slot: {
+      type: Array
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
+    address: {
+      type: String,
+    }
   },
   { timestamps: true },
 );
@@ -59,6 +90,7 @@ userSchema.methods.isPasswordMatch = async function (password) {
 userSchema.methods.encryptPassword = (password) => {
   return bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 };
+userSchema.index({ service_location: "2dsphere" });
 
 const User = mongoose.model('User', userSchema);
 
