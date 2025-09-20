@@ -55,4 +55,17 @@ module.exports = {
             return response.error(res, error);
         }
     },
+
+    updateAppointmentStatusByProvider: async (req, res) => {
+        try {
+            const payload = req?.body || {};
+            let appoint = await Appointment.findByIdAndUpdate(payload?.id, payload, {
+                new: true,
+                upsert: true,
+            });
+            return response.ok(res, appoint);
+        } catch (error) {
+            return response.error(res, error);
+        }
+    },
 };
