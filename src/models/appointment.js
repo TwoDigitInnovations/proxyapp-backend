@@ -33,7 +33,12 @@ const appointmentSchema = new mongoose.Schema({
     },
     ticketNumber: {
         type: String,
-    }
+    },
+    status: {
+        type: String,
+        enum: ['Pending', 'Completed'],
+        default: 'Pending'
+    },
 }, {
     timestamps: true
 });

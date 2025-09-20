@@ -37,4 +37,22 @@ module.exports = {
             return response.error(res, error);
         }
     },
+
+    getAppointmentByProvider: async (req, res) => {
+        try {
+            const appoint = await Appointment.find({ service: req.user.id }).populate('service', '-password')
+            return response.ok(res, appoint);
+        } catch (error) {
+            return response.error(res, error);
+        }
+    },
+
+    getRequestAppointmentByProviderId: async (req, res) => {
+        try {
+            const appoint = await Appointment.findById(req.params.id).populate('service', '-password')
+            return response.ok(res, appoint);
+        } catch (error) {
+            return response.error(res, error);
+        }
+    },
 };
