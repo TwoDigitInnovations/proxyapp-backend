@@ -78,7 +78,11 @@ const userSchema = new mongoose.Schema(
     },
     address: {
       type: String,
-    }
+    },
+    isAvailable: {
+      type: Boolean,
+      default: true
+    },
   },
   { timestamps: true },
 );
