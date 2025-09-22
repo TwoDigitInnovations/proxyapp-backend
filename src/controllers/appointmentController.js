@@ -4,7 +4,7 @@ const moment = require("moment");
 
 module.exports = {
     createAppointment: async (req, res) => {
-        console.log('AAAAAAA', req?.body)
+        // console.log('AAAAAAA', req?.body)
 
         try {
             const payload = req?.body || {};
@@ -12,7 +12,7 @@ module.exports = {
             const ticketNumber = `${moment().format('DDMMYYHHmmss')}`;
             payload.ticketNumber = ticketNumber;
             let appoint = new Appointment(payload);
-            console.log('BBBBBB', payload)
+            // console.log('BBBBBB', payload)
             await appoint.save();
             return response.ok(res, appoint);
         } catch (error) {
@@ -39,6 +39,7 @@ module.exports = {
     },
 
     getAppointmentByProvider: async (req, res) => {
+        console.log("AAAAAAA", req.user.id)
         try {
             const appoint = await Appointment.find({ service: req.user.id }).populate('service', '-password')
             return response.ok(res, appoint);
