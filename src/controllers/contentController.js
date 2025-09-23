@@ -1,7 +1,6 @@
-const response = require("../responses");
+const Content = require("@models/content");
+const response = require("./../responses");
 const mongoose = require("mongoose");
-const Content = mongoose.model("Content");
-
 
 module.exports = {
   createContent: async (req, res) => {
@@ -38,6 +37,4 @@ module.exports = {
       return response.error(res, error);
     }
   },
-
-
 };
