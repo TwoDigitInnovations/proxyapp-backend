@@ -69,4 +69,32 @@ module.exports = {
             return response.error(res, error);
         }
     },
+
+    getHistoryByUserId: async (req, res) => {
+        try {
+            let currentDate = new Date()
+            const userId = req.params.id;
+            const appointmentData = await Appointment.find({
+                user: userId,
+                full_date: { $lt: currentDate }
+            }).populate('service', '-password')
+            return response.ok(res, appointmentData);
+        } catch (error) {
+            return response.error(res, error);
+        }
+    },
+
+    getHistoryByProviderId: async (req, res) => {
+        try {
+            let currentDate = new Date()
+            const serviceId = req.params.id;
+            const appointmentData = await Appointment.find({
+                service: serviceId,
+                full_date: { $lt: currentDate }
+            }).populate('service', '-password')
+            return response.ok(res, appointmentData);
+        } catch (error) {
+            return response.error(res, error);
+        }
+    },
 };

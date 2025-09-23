@@ -39,6 +39,9 @@ const appointmentSchema = new mongoose.Schema({
         enum: ['Pending', 'Completed'],
         default: 'Pending'
     },
+    full_date: {
+        type: Date,
+    },
 }, {
     timestamps: true
 });
