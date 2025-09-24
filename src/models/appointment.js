@@ -31,6 +31,14 @@ const appointmentSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
     },
+    service_provider: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
+    service_ref: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Service",
+    },
     ticketNumber: {
         type: String,
     },

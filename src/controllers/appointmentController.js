@@ -22,7 +22,7 @@ module.exports = {
 
     getRequestAppointmentById: async (req, res) => {
         try {
-            const appoint = await Appointment.findById(req.params.id).populate('service', '-password')
+            const appoint = await Appointment.findById(req.params.id).populate('service_provider', '-password')
             return response.ok(res, appoint);
         } catch (error) {
             return response.error(res, error);
@@ -31,7 +31,7 @@ module.exports = {
 
     getAppointmentByUser: async (req, res) => {
         try {
-            const appoint = await Appointment.find({ user: req.user.id }).populate('service', '-password')
+            const appoint = await Appointment.find({ user: req.user.id }).populate('service_provider', '-password')
             return response.ok(res, appoint);
         } catch (error) {
             return response.error(res, error);
@@ -77,7 +77,7 @@ module.exports = {
             const appointmentData = await Appointment.find({
                 user: userId,
                 full_date: { $lt: currentDate }
-            }).populate('service', '-password')
+            }).populate('service_provider', '-password')
             return response.ok(res, appointmentData);
         } catch (error) {
             return response.error(res, error);

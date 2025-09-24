@@ -9,5 +9,5 @@ module.exports = (app) => {
   app.use('/category', categoryRoutes);
   app.use('/appointment', appointmentRoutes);
   app.use('/content', contentRoutes);
-  // app.use('/service', serviceRoutes);
+  app.use('/service', serviceRoutes);
 };

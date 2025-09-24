@@ -37,6 +37,10 @@ const serviceSchema = new mongoose.Schema({
     service_photo: {
         type: Array
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+    },
 }, {
     timestamps: true
 });
@@ -49,5 +53,7 @@ serviceSchema.set('toJSON', {
         return ret;
     }
 });
+
+serviceSchema.index({ service_location: "2dsphere" });
 
 module.exports = mongoose.model('Service', serviceSchema);
