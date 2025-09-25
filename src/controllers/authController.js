@@ -65,7 +65,7 @@ module.exports = {
         return res.status(401).json({ message: 'Invalid credentials' });
       }
 
-      const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
       res.json({
         token,
@@ -242,18 +242,20 @@ module.exports = {
       }
 
     }
-    if (payload.service_location) {
-      let d = JSON.parse(payload.service_location)
-      payload.service_location = {
-        type: 'Point',
-        coordinates: [d.lng, d.lat,]
-      }
-    }
 
-    if (payload.service_slot) {
-      let d = JSON.parse(payload.service_slot)
-      payload.service_slot = d
-    }
+    // if (payload.service_location) {
+    //   let d = JSON.parse(payload.service_location)
+    //   payload.service_location = {
+    //     type: 'Point',
+    //     coordinates: [d.lng, d.lat,]
+    //   }
+    // }
+
+    // if (payload.service_slot) {
+    //   let d = JSON.parse(payload.service_slot)
+    //   payload.service_slot = d
+    // }
+
     try {
       const u = await User.findByIdAndUpdate(
         userId,
@@ -263,7 +265,7 @@ module.exports = {
           upsert: true,
         }
       );
-      const token = jwt.sign({ id: u._id, email: u.email, role: u.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ id: u._id, email: u.email, role: u.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
       // let token = await new jwtService().createJwtToken({
       //   id: u._id,

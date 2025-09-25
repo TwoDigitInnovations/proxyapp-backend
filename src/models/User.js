@@ -1,17 +1,17 @@
 const mongoose = require('mongoose');
 const bcrypt = require("bcryptjs");
 
-const pointSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    enum: ["Point"],
-    required: true,
-  },
-  coordinates: {
-    type: [Number],
-    required: true,
-  },
-});
+// const pointSchema = new mongoose.Schema({
+//   type: {
+//     type: String,
+//     enum: ["Point"],
+//     required: true,
+//   },
+//   coordinates: {
+//     type: [Number],
+//     required: true,
+//   },
+// });
 
 const userSchema = new mongoose.Schema(
   {
@@ -60,28 +60,31 @@ const userSchema = new mongoose.Schema(
       default: 'Pending'
       // default: 'Suspended'
     },
-    service_name: {
-      type: String,
-    },
-    service_location: {
-      type: pointSchema,
-    },
-    service_description: {
-      type: String,
-    },
-    service_slot: {
-      type: Array
-    },
-    category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-    },
-    address: {
-      type: String,
-    },
+    // service_name: {
+    //   type: String,
+    // },
+    // service_location: {
+    //   type: pointSchema,
+    // },
+    // service_description: {
+    //   type: String,
+    // },
+    // service_slot: {
+    //   type: Array
+    // },
+    // category: {
+    //   type: mongoose.Schema.Types.ObjectId,
+    //   ref: "Category",
+    // },
+    // address: {
+    //   type: String,
+    // },
     isAvailable: {
       type: Boolean,
       default: true
+    },
+    about_us: {
+      type: String,
     },
   },
   { timestamps: true },
