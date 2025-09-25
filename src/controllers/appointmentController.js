@@ -30,6 +30,7 @@ module.exports = {
     },
 
     getAppointmentByUser: async (req, res) => {
+        console.log("AAAAAAA", req.user.id)
         try {
             const appoint = await Appointment.find({ user: req.user.id }).populate('service_provider', '-password')
             return response.ok(res, appoint);
@@ -39,9 +40,9 @@ module.exports = {
     },
 
     getAppointmentByProvider: async (req, res) => {
-        console.log("AAAAAAA", req.user.id)
+        // console.log("AAAAAAA", req.user.id)
         try {
-            const appoint = await Appointment.find({ service: req.user.id }).populate('service', '-password')
+            const appoint = await Appointment.find({ service_provider: req.user.id }).populate('user', '-password')
             return response.ok(res, appoint);
         } catch (error) {
             return response.error(res, error);
@@ -50,7 +51,7 @@ module.exports = {
 
     getRequestAppointmentByProviderId: async (req, res) => {
         try {
-            const appoint = await Appointment.findById(req.params.id).populate('service', '-password')
+            const appoint = await Appointment.findById(req.params.id).populate('service_provider', '-password')
             return response.ok(res, appoint);
         } catch (error) {
             return response.error(res, error);
@@ -89,9 +90,9 @@ module.exports = {
             let currentDate = new Date()
             const serviceId = req.params.id;
             const appointmentData = await Appointment.find({
-                service: serviceId,
+                service_provider: serviceId,
                 full_date: { $lt: currentDate }
-            }).populate('service', '-password')
+            }).populate('user', '-password')
             return response.ok(res, appointmentData);
         } catch (error) {
             return response.error(res, error);
