@@ -30,10 +30,49 @@ module.exports = {
     },
 
     getAppointmentByUser: async (req, res) => {
-        console.log("AAAAAAA", req.user.id)
+        // console.log("AAAAAAA", req.user.id)
+        // try {
+        //     const appoint = await Appointment.find({ user: req.user.id }).populate('service_provider', '-password')
+        //     return response.ok(res, appoint);
+        // } catch (error) {
+        //     return response.error(res, error);
+        // }
+
         try {
-            const appoint = await Appointment.find({ user: req.user.id }).populate('service_provider', '-password')
-            return response.ok(res, appoint);
+            let data = {};
+
+            const limit = parseInt(req.query.limit);
+            const page = parseInt(req.query.page);
+            const usePagination = !isNaN(limit) && !isNaN(page);
+
+            let query = Appointment.find({ user: req.user.id }).populate('service_provider', '-password');
+
+            if (usePagination) {
+                const skip = (page - 1) * limit;
+                query = query.skip(skip).limit(limit);
+            }
+
+            const appoint = await query.exec();
+            if (usePagination) {
+                const totalAppointment = await Appointment.countDocuments({ user: req.user.id });
+                const totalPages = Math.ceil(totalAppointment / limit);
+
+                return res.status(200).json({
+                    status: true,
+                    data: appoint,
+                    pagination: {
+                        totalItems: totalAppointment,
+                        totalPages: totalPages,
+                        currentPage: page,
+                        itemsPerPage: limit,
+                    },
+                });
+            } else {
+                return res.status(200).json({
+                    status: true,
+                    data: appoint,
+                });
+            }
         } catch (error) {
             return response.error(res, error);
         }
@@ -41,9 +80,48 @@ module.exports = {
 
     getAppointmentByProvider: async (req, res) => {
         // console.log("AAAAAAA", req.user.id)
+        // try {
+        //     const appoint = await Appointment.find({ service_provider: req.user.id, status: 'Pending' }).populate('user', '-password')
+        //     return response.ok(res, appoint);
+        // } catch (error) {
+        //     return response.error(res, error);
+        // }
+
         try {
-            const appoint = await Appointment.find({ service_provider: req.user.id, status: 'Pending' }).populate('user', '-password')
-            return response.ok(res, appoint);
+            let data = {};
+
+            const limit = parseInt(req.query.limit);
+            const page = parseInt(req.query.page);
+            const usePagination = !isNaN(limit) && !isNaN(page);
+
+            let query = Appointment.find({ service_provider: req.user.id, status: 'Pending' }).populate('user', '-password')
+
+            if (usePagination) {
+                const skip = (page - 1) * limit;
+                query = query.skip(skip).limit(limit);
+            }
+
+            const appoint = await query.exec();
+            if (usePagination) {
+                const totalAppointment = await Appointment.countDocuments({ service_provider: req.user.id, status: 'Pending' });
+                const totalPages = Math.ceil(totalAppointment / limit);
+
+                return res.status(200).json({
+                    status: true,
+                    data: appoint,
+                    pagination: {
+                        totalItems: totalAppointment,
+                        totalPages: totalPages,
+                        currentPage: page,
+                        itemsPerPage: limit,
+                    },
+                });
+            } else {
+                return res.status(200).json({
+                    status: true,
+                    data: appoint,
+                });
+            }
         } catch (error) {
             return response.error(res, error);
         }
@@ -72,28 +150,112 @@ module.exports = {
     },
 
     getHistoryByUserId: async (req, res) => {
+        // try {
+        //     let currentDate = new Date()
+        //     const userId = req.params.id;
+        //     const appointmentData = await Appointment.find({
+        //         user: userId,
+        //         full_date: { $lt: currentDate }
+        //     }).populate('service_provider', '-password')
+        //     return response.ok(res, appointmentData);
+        // } catch (error) {
+        //     return response.error(res, error);
+        // }
+
         try {
+            let data = {};
+
+            const limit = parseInt(req.query.limit);
+            const page = parseInt(req.query.page);
+            const usePagination = !isNaN(limit) && !isNaN(page);
+
             let currentDate = new Date()
             const userId = req.params.id;
-            const appointmentData = await Appointment.find({
-                user: userId,
-                full_date: { $lt: currentDate }
-            }).populate('service_provider', '-password')
-            return response.ok(res, appointmentData);
+
+            let query = Appointment.find({ user: userId, full_date: { $lt: currentDate } }).populate('service_provider', '-password')
+
+            if (usePagination) {
+                const skip = (page - 1) * limit;
+                query = query.skip(skip).limit(limit);
+            }
+
+            const appoint = await query.exec();
+            if (usePagination) {
+                const totalAppointment = await Appointment.countDocuments({ user: userId, full_date: { $lt: currentDate } });
+                const totalPages = Math.ceil(totalAppointment / limit);
+
+                return res.status(200).json({
+                    status: true,
+                    data: appoint,
+                    pagination: {
+                        totalItems: totalAppointment,
+                        totalPages: totalPages,
+                        currentPage: page,
+                        itemsPerPage: limit,
+                    },
+                });
+            } else {
+                return res.status(200).json({
+                    status: true,
+                    data: appoint,
+                });
+            }
         } catch (error) {
             return response.error(res, error);
         }
     },
 
     getHistoryByProviderId: async (req, res) => {
+        // try {
+        //     let currentDate = new Date()
+        //     const serviceId = req.params.id;
+        //     const appointmentData = await Appointment.find({
+        //         service_provider: serviceId,
+        //         full_date: { $lt: currentDate }
+        //     }).populate('user', '-password')
+        //     return response.ok(res, appointmentData);
+        // } catch (error) {
+        //     return response.error(res, error);
+        // }
+
         try {
+            let data = {};
+
+            const limit = parseInt(req.query.limit);
+            const page = parseInt(req.query.page);
+            const usePagination = !isNaN(limit) && !isNaN(page);
+
             let currentDate = new Date()
             const serviceId = req.params.id;
-            const appointmentData = await Appointment.find({
-                service_provider: serviceId,
-                full_date: { $lt: currentDate }
-            }).populate('user', '-password')
-            return response.ok(res, appointmentData);
+
+            let query = Appointment.find({ service_provider: serviceId, full_date: { $lt: currentDate } }).populate('user', '-password')
+
+            if (usePagination) {
+                const skip = (page - 1) * limit;
+                query = query.skip(skip).limit(limit);
+            }
+
+            const appoint = await query.exec();
+            if (usePagination) {
+                const totalAppointment = await Appointment.countDocuments({ service_provider: serviceId, full_date: { $lt: currentDate } });
+                const totalPages = Math.ceil(totalAppointment / limit);
+
+                return res.status(200).json({
+                    status: true,
+                    data: appoint,
+                    pagination: {
+                        totalItems: totalAppointment,
+                        totalPages: totalPages,
+                        currentPage: page,
+                        itemsPerPage: limit,
+                    },
+                });
+            } else {
+                return res.status(200).json({
+                    status: true,
+                    data: appoint,
+                });
+            }
         } catch (error) {
             return response.error(res, error);
         }
