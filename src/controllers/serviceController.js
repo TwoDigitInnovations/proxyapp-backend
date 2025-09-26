@@ -179,7 +179,7 @@ module.exports = {
                         as: 'user',
                         pipeline: [
                             {
-                                $match: { status: "Verified", }
+                                $match: { status: "Verified", isAvailable: true }
                             },
                             {
                                 $project: {

@@ -42,7 +42,7 @@ module.exports = {
     getAppointmentByProvider: async (req, res) => {
         // console.log("AAAAAAA", req.user.id)
         try {
-            const appoint = await Appointment.find({ service_provider: req.user.id }).populate('user', '-password')
+            const appoint = await Appointment.find({ service_provider: req.user.id, status: 'Pending' }).populate('user', '-password')
             return response.ok(res, appoint);
         } catch (error) {
             return response.error(res, error);
@@ -94,6 +94,19 @@ module.exports = {
                 full_date: { $lt: currentDate }
             }).populate('user', '-password')
             return response.ok(res, appointmentData);
+        } catch (error) {
+            return response.error(res, error);
+        }
+    },
+
+    getVisitorsStatus: async (req, res) => {
+        console.log("AAAAAAA", req.user.id)
+
+        try {
+            const totalAppoint = await Appointment.countDocuments({ service_provider: req.user.id });
+            const pendingAppoint = await Appointment.countDocuments({ service_provider: req.user.id, status: 'Pending' });
+            const completedAppoint = await Appointment.countDocuments({ service_provider: req.user.id, status: 'Completed' });
+            return response.ok(res, { totalAppoint, pendingAppoint, completedAppoint });
         } catch (error) {
             return response.error(res, error);
         }

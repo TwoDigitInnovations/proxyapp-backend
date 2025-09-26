@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { createAppointment, getRequestAppointmentById, getAppointmentByUser, getAppointmentByProvider, getRequestAppointmentByProviderId, updateAppointmentStatusByProvider, getHistoryByUserId, getHistoryByProviderId } = require('@controllers/appointmentController');
+const { createAppointment, getRequestAppointmentById, getAppointmentByUser, getAppointmentByProvider, getRequestAppointmentByProviderId, updateAppointmentStatusByProvider, getHistoryByUserId, getHistoryByProviderId, getVisitorsStatus } = require('@controllers/appointmentController');
 const auth = require('@middlewares/authMiddleware');
 
 router.post('/createAppointment', auth('user', 'admin'), createAppointment);
@@ -11,5 +11,6 @@ router.get('/getRequestAppointmentByProviderId/:id', auth('provider'), getReques
 router.post('/updateAppointmentStatusByProvider', auth('provider'), updateAppointmentStatusByProvider);
 router.get('/getHistoryByUserId/:id', auth('user'), getHistoryByUserId);
 router.get('/getHistoryByProviderId/:id', auth('provider'), getHistoryByProviderId);
+router.get('/getVisitorsStatus', auth('provider'), getVisitorsStatus);
 
 module.exports = router;
